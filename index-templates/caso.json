@@ -6,6 +6,12 @@
                 "type": "long"
             },
             "deaths": {
+                "type": "float"
+            },
+            "death_rate": {
+                "type": "float"
+            },
+            "confirmed_per_100k_inhabitants": {
                 "type": "long"
             },
             "date": {
