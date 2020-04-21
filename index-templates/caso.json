@@ -1,0 +1,14 @@
+{
+    "index_patterns": ["caso"],
+    "mappings": {
+        "properties": {
+            "confirmed": {
+                "type": "long"
+            },
+            "date": {
+                "type": "date",
+                "format": "yyyy-MM-dd"
+            }
+        }
+    }
+}
