@@ -50,7 +50,7 @@ kibana:
 	mkdir kibana
 
 export-kibana: kibana
-	-rm -f kibana/*
+	-rm -f kibana/.kibana*
 	node_modules/elasticdump/bin/elasticdump --input http://localhost:9200/.kibana_1 --output kibana/.kibana_1.mapping --type=mapping
 	node_modules/elasticdump/bin/elasticdump --input http://localhost:9200/.kibana_1 --output kibana/.kibana_1.data --type=data
 
