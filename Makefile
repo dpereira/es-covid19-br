@@ -16,7 +16,7 @@ build: pipeline
 run: collect templates pipeline
 	make -C $(ES_STACK) run
 
-recollect-data:
+recollect-data: export-kibana
 	-curl -XDELETE http://localhost:9200/caso
 	-curl -XDELETE http://localhost:9200/boletim
 	-curl -XDELETE http://localhost:9200/obito_cartorio
@@ -26,7 +26,7 @@ recollect-data:
 	-rm -f $(ES_STACK)/data/*
 	make run
 
-reload-data:
+reload-data: export-kibana
 	make -C $(ES_STACK) down
 	make build
 	make run
@@ -51,8 +51,8 @@ kibana:
 
 export-kibana: kibana
 	-rm -f kibana/.kibana*
-	node_modules/elasticdump/bin/elasticdump --input http://localhost:9200/.kibana_1 --output kibana/.kibana_1.mapping --type=mapping
-	node_modules/elasticdump/bin/elasticdump --input http://localhost:9200/.kibana_1 --output kibana/.kibana_1.data --type=data
+	-node_modules/elasticdump/bin/elasticdump --input http://localhost:9200/.kibana_1 --output kibana/.kibana_1.mapping --type=mapping
+	-node_modules/elasticdump/bin/elasticdump --input http://localhost:9200/.kibana_1 --output kibana/.kibana_1.data --type=data
 
 import-kibana:
 	node_modules/elasticdump/bin/elasticdump --output http://localhost:9200/.kibana_1 --input kibana/.kibana_1.mapping --type=mapping
