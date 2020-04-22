@@ -45,7 +45,9 @@ visualizações e queries que vêm junto com o repositório com:
 $ make import-kibana
 ```
 
-E, finalmente, acessar o Kibana: http://localhost:5601
+E, finalmente, acessar o Kibana: http://localhost:5601.
+
+Caso não tenha familiaridade no uso do Kibana, você pode consultar a documentação da Elastic.
 
 ![](doc/img/totals.png)
 ![](doc/img/states.png)
@@ -105,3 +107,12 @@ no diretório `saved-objects`. E envie um PR.
 No PR, descreva a motivação e a alteração na maior quantidade de detalhes possível.
 
 Você pode querer revisar as Issues que temos abertas.
+
+## Referências
+
+- Dados da Covid19 no Brasil.IO:
+  - Datasets: https://brasil.io/dataset/covid19/caso/
+  - Coleta: https://github.com/turicas/covid19-br
+- Kibana: https://www.elastic.co/guide/en/kibana/7.6/index.html
+- Elasticsearch: https://www.elastic.co/guide/en/elasticsearch/guide/master/index.html
+- Logstash: https://www.elastic.co/guide/en/logstash/current/getting-started-with-logstash.html
