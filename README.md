@@ -47,6 +47,9 @@ $ make import-kibana
 
 E, finalmente, acessar o Kibana: http://localhost:5601
 
+![](doc/img/totals.png)
+![](doc/img/states.png)
+
 ## Atualizando os dados
 
 Caso você queira atualizar os dados com a ultima versão disponível, você poderia executar:
