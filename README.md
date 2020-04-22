@@ -48,7 +48,7 @@ $ make import-kibana
 E, finalmente, acessar o Kibana: http://localhost:5601.
 
 Caso não tenha familiaridade no uso do Kibana, você pode consultar a documentação da Elastic,
-incluída na seção de [Referências](#referencias), abaixo.
+incluída na seção de [Referências](#Referências), abaixo.
 
 ![](doc/img/totals.png)
 ![](doc/img/states.png)
