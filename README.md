@@ -104,7 +104,9 @@ Contribuições de código podem ser feitas via PR normalmente.
 
 Caso deseje incluir ou modificar algum dashboard, query, visualização ou qualquer
 dado relacionado ao Kibana, localize ou crie um diretório adequado para sua alteração
-no diretório `saved-objects`. E envie um PR.
+no diretório `saved-objects`. [Exporte](https://www.elastic.co/guide/en/kibana/current/managing-saved-objects.html) 
+os objetos relevantes do Kibana para a sua alteração,
+neste diretório, faça um commit com eles e envie um PR.
 
 No PR, descreva a motivação e a alteração na maior quantidade de detalhes possível.
 
