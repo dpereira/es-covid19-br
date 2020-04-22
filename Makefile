@@ -3,17 +3,19 @@ DATA=covid19-br
 ES_STACK=elastic-stack
 DATA_OUTPUT_DIR=data/output
 
-setup:
+setup-docker:
+	make -C $(ES_STACK) setup_vm_max_map_count
+
+setup: setup-docker
 	git submodule update --init
 	make -C $(ES_STACK) setup
-	make -C $(ES_STACK) setup_vm_max_map_count
 	npm install elasticdump
 
 build: pipeline
 	make -C $(DATA) docker-build
 	make -C $(ES_STACK) build
 
-run: collect templates pipeline
+run: setup-docker collect templates pipeline
 	make -C $(ES_STACK) run
 
 recollect-data: export-kibana
