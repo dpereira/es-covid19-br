@@ -6,7 +6,8 @@ facilitando acesso e consulta.
 ## Dependências
 
 Você irá precisar de:
- - node v10+
+ - docker 19+
+ - node 10+
  - npm
  - python 3+
  - curl
