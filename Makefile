@@ -72,11 +72,11 @@ import-kibana:
 	node_modules/elasticdump/bin/elasticdump --output http://localhost:9200/.kibana_1 --input kibana/.kibana_1.data --type=data
 
 commit-containers:
-	docker commit stack_elasticsearch_7_6_2 stack_elasticsearch_7_6_2
-	docker commit stack_kibana_7_6_2 stack_kibana_7_6_2
+	docker commit stack_elasticsearch_7.6.2 stack_elasticsearch_7.6.2
+	docker commit stack_kibana_7.6.2 stack_kibana_7.6.2
 
 tag-and-push:
-	docker tag stack_elasticsearch_7_6_2 gcr.io/es-covd19-br/stack_elasticsearch_7_6_2
-	docker tag stack_kibana_7_6_2 gcr.io/es-covd19-br/stack_kibana_7_6_2
-	docker push gcr.io/es-covd19-br/stack_elasticsearch_7_6_2
-	docker push gcr.io/es-covd19-br/stack_kibana_7_6_2
+	docker tag stack_elasticsearch_7.6.2 gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
+	docker tag stack_kibana_7.6.2 gcr.io/es-covd19-br/stack_kibana_7.6.2
+	docker push gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
+	docker push gcr.io/es-covd19-br/stack_kibana_7.6.2
