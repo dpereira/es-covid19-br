@@ -22,7 +22,7 @@ build: pipeline
 run: setup-docker collect templates pipeline
 	make -C $(ES_STACK) run
 
-recollect-data: export-kibana
+recollect-data:
 	-curl -XDELETE http://localhost:9200/caso
 	-curl -XDELETE http://localhost:9200/boletim
 	-curl -XDELETE http://localhost:9200/obito_cartorio
@@ -64,8 +64,12 @@ import-kibana:
 	node_modules/elasticdump/bin/elasticdump --output http://localhost:9200/.kibana_1 --input kibana/.kibana_1.mapping --type=mapping
 	node_modules/elasticdump/bin/elasticdump --output http://localhost:9200/.kibana_1 --input kibana/.kibana_1.data --type=data
 
+commit-containers:
+	docker commit stack_elasticsearch_7_6_2 stack_elasticsearch_7_6_2
+	docker commit stack_kibana_7_6_2 stack_kibana_7_6_2
+
 tag-and-push:
-	docker tag stack_7_6_2_logstash-data-loader gcr.io/es-covd19-br/stack_7_6_2_logstash-data-loader
-	docker tag covid19-br gcr.io/es-covd19-br/covid19-br
-	docker push gcr.io/es-covd19-br/stack_7_6_2_logstash-data-loader
-	docker push gcr.io/es-covd19-br/covid19-br
+	docker tag stack_elasticsearch_7_6_2 gcr.io/es-covd19-br/stack_elasticsearch_7_6_2
+	docker tag stack_kibana_7_6_2 gcr.io/es-covd19-br/stack_kibana_7_6_2
+	docker push gcr.io/es-covd19-br/stack_elasticsearch_7_6_2
+	docker push gcr.io/es-covd19-br/stack_kibana_7_6_2
