@@ -22,7 +22,7 @@ build: pipeline
 run: setup-docker collect templates pipeline
 	make -C $(ES_STACK) run
 
-recollect-data: export-kibana
+recollect-data:
 	-curl -XDELETE http://localhost:9200/caso
 	-curl -XDELETE http://localhost:9200/boletim
 	-curl -XDELETE http://localhost:9200/obito_cartorio
@@ -32,7 +32,7 @@ recollect-data: export-kibana
 	-rm -f $(ES_STACK)/data/*
 	make run
 
-reload-data: export-kibana
+reload-data:
 	make -C $(ES_STACK) down
 	make build
 	make run
