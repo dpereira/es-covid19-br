@@ -1,10 +1,14 @@
-
+OS=$(shell uname -s)
 DATA=covid19-br
 ES_STACK=elastic-stack
 DATA_OUTPUT_DIR=data/output
 
+
 setup-docker:
+ifeq "$(OS)" "Linux"
+	echo "setting up"
 	make -C $(ES_STACK) setup_vm_max_map_count
+endif
 
 setup: setup-docker
 	git submodule update --init
