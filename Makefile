@@ -63,3 +63,9 @@ export-kibana: kibana
 import-kibana:
 	node_modules/elasticdump/bin/elasticdump --output http://localhost:9200/.kibana_1 --input kibana/.kibana_1.mapping --type=mapping
 	node_modules/elasticdump/bin/elasticdump --output http://localhost:9200/.kibana_1 --input kibana/.kibana_1.data --type=data
+
+tag-and-push:
+	docker tag stack_7_6_2_logstash-data-loader gcr.io/es-covd19-br/stack_7_6_2_logstash-data-loader
+	docker tag covid19-br gcr.io/es-covd19-br/covid19-br
+	docker push gcr.io/es-covd19-br/stack_7_6_2_logstash-data-loader
+	docker push gcr.io/es-covd19-br/covid19-br
