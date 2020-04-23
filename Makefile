@@ -11,9 +11,10 @@ ifeq "$(OS)" "Linux"
 	make -C $(ES_STACK) setup_vm_max_map_count
 endif
 
-setup: setup-docker
+setup:
 	git submodule update --init
 	make -C $(ES_STACK) setup
+	make setup-docker
 	npm install elasticdump
 
 build: pipeline
