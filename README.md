@@ -23,6 +23,7 @@ Você irá precisar de:
 
 ```
 $ make setup
+$ make build
 ```
 
 Isto deve dar conta de instalar todas as ferramentas adicionais necessárias.
@@ -37,7 +38,6 @@ funcionem neles.
 Após o setup inicial, você pode:
 
 ```
-$ make build
 $ make run
 ```
 
