@@ -5,7 +5,7 @@ facilitando acesso e consulta.
 
 ## Licenças
 
-Os scripts neste repositório se encontram sob Apache License v2.0, mas os dados carregados
+Os scripts neste repositório se encontram sob [Apache License v2.0](https://www.apache.org/licenses/LICENSE-2.0), mas os dados carregados
 são distribuídos pela licensa descrita em [turicas/covid19-br](https://github.com/turicas/covid19-br#licen%C3%A7a).
 
 Caso inclua visualizações que usam estes dados em algum projeto, atente para as condições de uso e
