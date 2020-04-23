@@ -37,6 +37,7 @@ funcionem neles.
 Após o setup inicial, você pode:
 
 ```
+$ make build
 $ make run
 ```
 
