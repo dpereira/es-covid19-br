@@ -3,10 +3,11 @@ DATA=covid19-br
 ES_STACK=elastic-stack
 DATA_OUTPUT_DIR=data/output
 
+$(DATA_OUTPUT_DIR):
+	mkdir -p $(DATA_OUTPUT_DIR)
 
 setup-docker:
 ifeq "$(OS)" "Linux"
-	echo "setting up"
 	make -C $(ES_STACK) setup_vm_max_map_count
 endif
 
@@ -19,7 +20,7 @@ build: pipeline
 	make -C $(DATA) docker-build
 	make -C $(ES_STACK) build
 
-run: setup-docker collect templates pipeline
+run: setup-docker collect templates pipeline $(DATA_OUTPUT_DIR)
 	make -C $(ES_STACK) run
 
 recollect-data:
@@ -37,10 +38,16 @@ reload-data:
 	make build
 	make run
 
-collect: $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/caso.csv $(ES_STACK)/data/obito_cartorio.csv
+collect: $(ES_STACK)/data/caso.csv
 
-data/output/%.gz:
-	make -C $(DATA) docker-run
+collect-all: collect $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv
+
+data/output/caso.csv.gz: $(DATA_OUTPUT_DIR)
+	-docker container run --rm --name covid19-br --volume $(PWD)/data/output:/opt/covid19-br/data/output covid19-br ./run.sh
+	sudo chown -R ${USER} $(DATA_OUTPUT_DIR)
+
+data/output/%.gz: $(DATA_OUTPUT_DIR)
+	-make -C $(DATA) docker-run
 	sudo chown -R ${USER} $(DATA_OUTPUT_DIR)
 
 $(ES_STACK)/data/%.csv: $(DATA_OUTPUT_DIR)/%.csv.gz
@@ -63,3 +70,13 @@ export-kibana: kibana
 import-kibana:
 	node_modules/elasticdump/bin/elasticdump --output http://localhost:9200/.kibana_1 --input kibana/.kibana_1.mapping --type=mapping
 	node_modules/elasticdump/bin/elasticdump --output http://localhost:9200/.kibana_1 --input kibana/.kibana_1.data --type=data
+
+commit-containers:
+	docker commit stack_elasticsearch_7.6.2 stack_elasticsearch_7.6.2
+	docker commit stack_kibana_7.6.2 stack_kibana_7.6.2
+
+tag-and-push:
+	docker tag stack_elasticsearch_7.6.2 gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
+	docker tag stack_kibana_7.6.2 gcr.io/es-covd19-br/stack_kibana_7.6.2
+	docker push gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
+	docker push gcr.io/es-covd19-br/stack_kibana_7.6.2
