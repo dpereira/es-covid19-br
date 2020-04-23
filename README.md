@@ -3,6 +3,14 @@
 Empacota os dados de [turicas/covid19-br](https://github.com/turicas/covid19-br) em uma instância Kibana/Elasticsearch,
 facilitando acesso e consulta.
 
+## Licensas
+
+Os scripts neste repositório se encontram sob Apache License v2.0, mas os dados carregados
+são distribuídos pela licensa descrita [aqui](https://github.com/turicas/covid19-br#licen%C3%A7a).
+
+Caso inclua visualisações que usam estes dados em algum projeto, atente para as condições de uso e
+distribuição destes dados.
+
 ## Dependências
 
 Você irá precisar de:
