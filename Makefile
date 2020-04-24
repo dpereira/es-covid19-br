@@ -43,10 +43,6 @@ collect: $(ES_STACK)/data/caso.csv
 
 collect-all: collect $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv
 
-data/output/caso.csv.gz: $(DATA_OUTPUT_DIR)
-	-docker container run --rm --name covid19-br --volume $(PWD)/data/output:/opt/covid19-br/data/output covid19-br ./run.sh
-	sudo chown -R ${USER} $(DATA_OUTPUT_DIR)
-
 data/output/%.gz: $(DATA_OUTPUT_DIR)
 	-make -C $(DATA) docker-run
 	sudo chown -R ${USER} $(DATA_OUTPUT_DIR)
