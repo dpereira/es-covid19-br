@@ -16,6 +16,7 @@ setup:
 	make -C $(ES_STACK) setup
 	make setup-docker
 	npm install elasticdump
+	make build
 
 build: pipeline
 	make -C $(DATA) docker-build
