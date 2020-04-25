@@ -17,7 +17,7 @@ setup:
 	git submodule update --init
 	make -C $(ES_STACK) setup
 	make setup-docker
-	npm install elasticdump
+	npm install
 	make build
 	make download
 
