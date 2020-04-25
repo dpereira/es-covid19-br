@@ -1,4 +1,4 @@
-.PHONY: setup-docker build run recollect-data reload-data download collect templates kibana pipeline export-kibana import-kibana commit-containers tag-and-push clean
+.PHONY: setup-docker build run recollect-data reload-data download collect templates kibana pipeline export-kibana import-kibana commit-containers tag push clean deploy-gcr
 
 OS=$(shell uname -s)
 DATA=covid19-br
@@ -22,13 +22,15 @@ setup:
 	make download
 
 build: pipeline
-	make -C $(DATA) docker-build
 	make -C $(ES_STACK) build
+
+build-data:
+	make -C $(DATA) docker-build
 
 run: $(DATA_OUTPUT_DIR) setup-docker collect templates pipeline 	
 	make -C $(ES_STACK) run
 
-recollect-data:
+recollect-data: build-data
 	make -C $(ES_STACK) down
 	make clean
 	make collect
@@ -80,8 +82,12 @@ commit-containers:
 	docker commit stack_elasticsearch_7.6.2 stack_elasticsearch_7.6.2
 	docker commit stack_kibana_7.6.2 stack_kibana_7.6.2
 
-tag-and-push:
+tag:
 	docker tag stack_elasticsearch_7.6.2 gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
 	docker tag stack_kibana_7.6.2 gcr.io/es-covd19-br/stack_kibana_7.6.2
+
+push:
 	docker push gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
 	docker push gcr.io/es-covd19-br/stack_kibana_7.6.2
+
+deploy-gcr: commit-containers tag push
