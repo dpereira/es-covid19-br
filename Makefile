@@ -1,4 +1,4 @@
-.PHONY: setup-docker build run recollect-data reload-data download collect templates kibana pipeline export-kibana import-kibana commit-containers tag push clean deploy-gcr
+.PHONY: setup-docker build run recollect-data reload-data download collect templates pipeline export-kibana import-kibana commit-containers tag push clean deploy-gcr
 
 OS=$(shell uname -s)
 DATA=covid19-br
