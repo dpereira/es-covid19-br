@@ -25,7 +25,8 @@ Você irá precisar de:
 $ make setup
 ```
 
-Isto deve dar conta de instalar todas as ferramentas adicionais necessárias.
+Isto deve dar conta de instalar todas as ferramentas adicionais necessárias, e baixar
+os dados a partir dos [datasets.](https://data.brasil.io/dataset/covid19/_meta/list.html)
 
 Este projeto foi apenas testado em Linux, e precisa de uma configuração de sistema
 para que o Elasticsearch rode corretamente sobre Docker. Esta config talvez não seja
@@ -40,12 +41,8 @@ Após o setup inicial, você pode:
 $ make run
 ```
 
-Isto irá fazer o download dos dados usando os scripts e imagens no repo
-[turicas/covid19-br](https://github.com/turicas/covid19-br). Este passo pode
-levar por volta de 30min (ou mais, dependendo de sua conexão), seja paciente.
-
-Em seguida, serão inicializados containeres Elasticsearch e Kibana, sendo os dados
-populados em índices do Elasticsearch logo em seguida.
+Serão inicializados containeres Elasticsearch e Kibana, sendo os dados
+populados em índices do Elasticsearch via Logstash logo em seguida.
 
 Terminada a inclusão dos dados no Elasticsearch, você pode importar alguns dashboards,
 visualizações e queries que vêm junto com o repositório com:
@@ -67,29 +64,25 @@ incluída na seção de [Referências](#Referências), abaixo.
 Caso você queira atualizar os dados com a ultima versão disponível, você poderia executar:
 
 ```
-$ make recollect-data
+$ make clean download reload-data run
 ```
 
 Mas note que isto irá também resetar as configurações de objetos salvos no Kibana,
 ou seja, dashboards, queries, visualizações, etc.
 
-Para que você não perca seus dashboards e queries, incluimos os seguintes comandos:
+Para que você não perca seus dashboards e queries, você pode rodar a seguinte seqüência de targets:
 
 ```
-$ make export-kibana
-$ make recollect-data
-... (espere os downloads terminarem e os dados terem sido corretamente repopulados no Elasticsearch)
+$ make clean export-kibana download reload-data run 
 $ make import-kibana
 ```
 
 Recarregue o Kibana, caso o tenha aberto no browser (full reload), para que as alterações façam efeito.
 
-Se você alterou algo relacionado a configuração de templates ou pipelines, ou mesmo dados (veja seção abaixo),
-e deseja que elas tenham efeito sem precisar executar a coleta de dados novamente, basta rodar:
+Se você quiser executar a coleta localmente, ao invés de baixar os dados já consolidados, pode rodar:
 
 ```
-$ make export-kibana
-$ make reload-data
+$ make export-kibana recollect-data run 
 $ make import-kibana
 ```
 
