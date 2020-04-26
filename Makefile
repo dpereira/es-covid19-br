@@ -34,6 +34,8 @@ build-data:
 run: $(DATA_OUTPUT_DIR) setup-docker collect templates pipeline 	
 	make -C $(ES_STACK) run
 
+update-data: clean download reload-data run
+
 recollect-data: build-data
 	make -C $(ES_STACK) down
 	make clean
