@@ -64,7 +64,7 @@ incluída na seção de [Referências](#Referências), abaixo.
 Caso você queira atualizar os dados com a ultima versão disponível, você poderia executar:
 
 ```
-$ make clean download reload-data run
+$ make update-data
 ```
 
 Mas note que isto irá também resetar as configurações de objetos salvos no Kibana,
@@ -73,7 +73,8 @@ ou seja, dashboards, queries, visualizações, etc.
 Para que você não perca seus dashboards e queries, você pode rodar a seguinte seqüência de targets:
 
 ```
-$ make clean export-kibana download reload-data run 
+$ make export-kibana
+$ make update-data
 $ make import-kibana
 ```
 

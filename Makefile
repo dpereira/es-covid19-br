@@ -1,4 +1,8 @@
-.PHONY: setup-docker build run recollect-data reload-data download collect templates pipeline export-kibana import-kibana commit-containers tag push clean deploy-gcr
+.PHONY: \
+	setup-docker build run recollect-data reload-data download \
+	collect templates pipeline export-kibana import-kibana commit-containers \
+	tag-gcr push-gcr tag-hub push-hub clean deploy-gcr depoy-hub tag-treescale \
+	push-treescale deploy-treescale
 
 OS=$(shell uname -s)
 DATA=covid19-br
@@ -29,6 +33,8 @@ build-data:
 
 run: $(DATA_OUTPUT_DIR) setup-docker collect templates pipeline 	
 	make -C $(ES_STACK) run
+
+update-data: clean download reload-data run
 
 recollect-data: build-data
 	make -C $(ES_STACK) down
@@ -82,12 +88,32 @@ commit-containers:
 	docker commit stack_elasticsearch_7.6.2 stack_elasticsearch_7.6.2
 	docker commit stack_kibana_7.6.2 stack_kibana_7.6.2
 
-tag:
+tag-gcr:
 	docker tag stack_elasticsearch_7.6.2 gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
 	docker tag stack_kibana_7.6.2 gcr.io/es-covd19-br/stack_kibana_7.6.2
 
-push:
-	docker push gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
-	docker push gcr.io/es-covd19-br/stack_kibana_7.6.2
+tag-hub:
+	docker tag stack_elasticsearch_7.6.2 diegop/stack_elasticsearch_7.6.2
+	docker tag stack_kibana_7.6.2 diegop/stack_kibana_7.6.2
 
-deploy-gcr: commit-containers tag push
+tag-treescale:
+	docker tag stack_kibana_7.6.2 repo.treescale.com/dpereira/es-covid19-br/stack_kibana_7.6.2
+	docker tag stack_elasticsearch_7.6.2 repo.treescale.com/dpereira/es-covid19-br/stack_elasticsearch_7.6.2
+
+push-gcr:
+	docker push gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
+	docker push gcr.io/es-covd20-br/stack_kibana_7.6.2
+
+push-hub:
+	docker push diegop/stack_kibana_7.6.2
+	docker push diegop/stack_elasticsearch_7.6.2
+
+push-treescale:
+	docker push repo.treescale.com/dpereira/es-covid19-br/stack_kibana_7.6.2
+	docker push repo.treescale.com/dpereira/es-covid19-br/stack_elasticsearch_7.6.2
+
+deploy-gcr: commit-containers tag-gcr push-gcr
+
+deploy-hub: commit-containers tag-hub push-hub
+
+deploy-treescale: commit-containers tag-treescale push-treescale
