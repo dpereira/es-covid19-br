@@ -1,0 +1,35 @@
+{
+    "index_patterns": ["obito_cartorio"],
+    "mappings": {
+        "properties": {
+            "date": {
+                "type": "date",
+                "format": "strict_date_optional_time"
+            },
+            "new_deaths_pneumonia_2019": {
+                "type": "long"
+            },
+            "new_deaths_pneumonia_2020": {
+                "type": "long"
+            },
+            "new_deaths_respiratory_failure_2019": {
+                "type": "long"
+            },
+            "new_deaths_respiratory_failure_2020": {
+                "type": "long"
+            },
+            "deaths_pneumonia_2019": {
+                "type": "long"
+            },
+            "deaths_pneumonia_2020": {
+                "type": "long"
+            },
+            "deaths_respiratory_failure_2019": {
+                "type": "long"
+            },
+            "deaths_respiratory_failure_2020": {
+                "type": "long"
+            }
+        }
+    }
+}
