@@ -91,7 +91,7 @@ E recarregar a aplicação no browser da mesma forma.
 
 ## Configurando
 
-A injestão dos dados é feita no Elasticsearch em um índice por arquivo .csv gerado pelo projeto de coleta (covid19-br).
+A ingestão dos dados é feita no Elasticsearch em um índice por arquivo .csv gerado pelo projeto de coleta (covid19-br).
 Para um dado arquivo `nome.csv` é criado um índice chamado `nome` no Elasticsearch. Para que as queries e dashboards funcionem bem, é preciso
 prover _mappings_ para que os dados sejam interpretados corretamente pelo Elasticsearch. Um mapping de exemplo para o arquivo/índice
 de casos (`caso.csv`/`caso`) é incluído no diretório `index-templates`, com o nome `caso.json`. Outros templates com os mappings necessários
