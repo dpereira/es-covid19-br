@@ -5,6 +5,8 @@ Usage:
     extrapolation <data_file>
 """
 
+import csv
+import datetime
 import docopt
 import numpy
 
@@ -26,7 +28,19 @@ dtypes = {
 }
 
 
-def extrapolate(data_file):
+def cities_data(data):
+    sorted_data = numpy.sort(data, order=('city', 'state'))
+
+    current_city = sorted_data[0]['city']
+    current_index = 0
+
+    for i, entry in enumerate(sorted_data):
+        if  current_city != entry['city']:
+            yield sorted_data[current_index:i]
+            current_index = i
+            current_city = entry['city']
+
+def load_data(data_file):
     with open(data_file, 'r') as df:
         dtype = dtypes.get(data_file.split('/')[-1])
 
@@ -35,9 +49,68 @@ def extrapolate(data_file):
         else:
             converters = 0
 
-        data = numpy.loadtxt(df, dtype=dtype, delimiter=',', skiprows=1, converters=converters)
+        return numpy.loadtxt(df, dtype=dtype, delimiter=',', skiprows=1, converters=converters), dtype
+
+
+def extrapolate_data(city_data, field='confirmed', prior=5, after=14):
+    daystamps = [
+        int(datetime.datetime.strptime(day['date'], '%Y-%m-%d').timestamp() / (24 * 3600))
+        for day in city_data
+    ]
+
+    prior_index = min(len(city_data[field]), prior)
+    fit = numpy.polyfit(daystamps[-prior_index:], city_data[field][-prior_index:], 1)
+    p = numpy.poly1d(fit)
+
+    latest_date = max(daystamps)
+    extra_data = [max(0, int(p(latest_date + i))) for i in range(1, after + 1)]
+    utc_timestamp = lambda i: ((latest_date + i) * 24 * 3600) + 10800  # BRT +3h = UTC
+    extra_days = [datetime.datetime.fromtimestamp(utc_timestamp(i)).strftime('%Y-%m-%d') for  i in range(1, after + 1)]
+
+    return extra_days, extra_data
+
+
+def extrapolate(data_file, prior=5, after=14):
+    data, dtype = load_data(data_file)
+
+    extrapolated = []
+
+    for city_data in cities_data(data):
+        state = city_data[0]['state']
+        city = city_data[0]['city']
+        place_type = city_data[0]['place_type']
+        order_for_place = city_data[0]['order_for_place']
+        estimated_population_2019 = city_data[0]['estimated_population_2019'] or 1
+        city_ibge_code = city_data[0]['city_ibge_code']
+        is_last = False
+        extrapolation = True
+
+        days, confirmed = extrapolate_data(city_data, field='confirmed', prior=prior, after=after)
+        days, deaths = extrapolate_data(city_data, field='deaths', prior=prior, after=after)
+
+        data = [
+            (
+                days[i], state, city.decode('latin-1'), place_type, confirmed[i], deaths[i], order_for_place,
+                is_last, estimated_population_2019, city_ibge_code,
+                confirmed[i] / (estimated_population_2019 / 100000), deaths[i] / confirmed[i] if confirmed[i] else 0
+            )
+            for i in range(after)
+        ]
+
+        extrapolated += data
+
+    return extrapolated
+
+
+def save(data, file_name):
+    with open(file_name, 'w+') as f:
+        writer = csv.writer(f)
+
+        for row in data:
+            writer.writerow(row)
 
 
 if __name__ == "__main__":
     args = docopt.docopt(__doc__)
-    extrapolate(args['<data_file>'])
+    e = extrapolate(args['<data_file>'])
+    save(e, '/tmp/extra.csv')
