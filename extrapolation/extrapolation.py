@@ -1,14 +1,8 @@
-"""
-extrapolation.
-
-Usage:
-    extrapolation <data_file>
-"""
-
+import argparse
 import csv
 import datetime
-import docopt
 import numpy
+import sys
 
 dtypes = {
     'caso.csv': [
@@ -40,16 +34,17 @@ def cities_data(data):
             current_index = i
             current_city = entry['city']
 
-def load_data(data_file):
-    with open(data_file, 'r') as df:
-        dtype = dtypes.get(data_file.split('/')[-1])
+
+def load_data(input):
+    with open(input, 'r') as df:
+        dtype = dtypes.get(input.split('/')[-1])
 
         if dtype:
             converters = { i: lambda x: x or 0 for i in range(len(dtype))}
         else:
             converters = 0
 
-        return numpy.loadtxt(df, dtype=dtype, delimiter=',', skiprows=1, converters=converters), dtype
+        return numpy.loadtxt(df, dtype=dtype, delimiter=',', skiprows=1, converters=converters)
 
 
 def extrapolate_data(city_data, field='confirmed', prior=5, after=14):
@@ -70,8 +65,7 @@ def extrapolate_data(city_data, field='confirmed', prior=5, after=14):
     return extra_days, extra_data
 
 
-def extrapolate(data_file, prior=5, after=14):
-    data, dtype = load_data(data_file)
+def extrapolate(data, prior=5, after=14):
 
     extrapolated = []
 
@@ -102,15 +96,25 @@ def extrapolate(data_file, prior=5, after=14):
     return extrapolated
 
 
-def save(data, file_name):
+def save(data, header_names, file_name):
+
     with open(file_name, 'w+') as f:
         writer = csv.writer(f)
 
+        writer.writerow(header_names)
         for row in data:
             writer.writerow(row)
 
 
 if __name__ == "__main__":
-    args = docopt.docopt(__doc__)
-    e = extrapolate(args['<data_file>'])
-    save(e, '/tmp/extra.csv')
+    parser = argparse.ArgumentParser(description='Extrapolate covid-19 data')
+    parser.add_argument('input')
+    parser.add_argument('output')
+    parser.add_argument('--prior', type=int, default=14)
+    parser.add_argument('--after', type=int, default=14)
+
+    args = parser.parse_args()
+
+    data = load_data(args.input)
+    e = extrapolate(data, args.prior, args.after)
+    save(e, data.dtype.names, args.output)
