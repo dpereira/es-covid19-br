@@ -2,7 +2,7 @@
 	setup-docker build run recollect-data reload-data download \
 	collect templates pipeline export-kibana import-kibana commit-containers \
 	tag-gcr push-gcr tag-hub push-hub clean deploy-gcr depoy-hub tag-treescale \
-	push-treescale deploy-treescale
+	push-treescale deploy-treescale extrapolate
 
 OS=$(shell uname -s)
 DATA=covid19-br
@@ -31,13 +31,19 @@ build: pipeline
 build-data:
 	make -C $(DATA) docker-build
 
+repository:
+	curl -XPUT http://localhost:9200/_snapshot/backup -d '{"type": "fs", "settings": {"location": "/snapshots"}}' -H 'Content-Type: application/json'
+
+backup: repository
+	curl -XPUT "http://localhost:9200/_snapshot/backup/snapshot_$(shell date +%s)?wait_for_completion=true"
+
 run: $(DATA_OUTPUT_DIR) setup-docker collect templates pipeline 	
 	make -C $(ES_STACK) run
 
 stop:
 	make -C $(ES_STACK) stop
 
-update-data: clean download reload-data run
+update-data: clean download extrapolate reload-data run
 
 recollect-data: build-data
 	make -C $(ES_STACK) down
@@ -61,10 +67,15 @@ download: $(DATA_OUTPUT_DIR)
 
 collect: $(ES_STACK)/data/caso.csv $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv
 
+extrapolate: $(ES_STACK)/data/caso-extra.csv
+
 $(DATA_OUTPUT_DIR)/%.gz:
 	make $(DATA_OUTPUT_DIR)
 	-make -C $(DATA) docker-run
 	sudo chown -R ${USER} $(DATA_OUTPUT_DIR)
+
+$(ES_STACK)/data/%-extra.csv: $(ES_STACK)/data/%.csv
+	python extrapolation/extrapolation.py $< $@ --prior 30 --after 30 --order 2
 
 $(ES_STACK)/data/%.csv: $(DATA_OUTPUT_DIR)/%.csv.gz
 	gunzip -c $< > $@
