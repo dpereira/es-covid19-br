@@ -24,6 +24,7 @@ setup:
 	npm install
 	make build
 	make download
+	pip install -r extrapolation/requirements.txt
 
 build: pipeline
 	make -C $(ES_STACK) build
