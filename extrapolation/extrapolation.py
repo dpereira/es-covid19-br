@@ -47,14 +47,17 @@ def load_data(input):
         return numpy.loadtxt(df, dtype=dtype, delimiter=',', skiprows=1, converters=converters)
 
 
-def extrapolate_data(city_data, field='confirmed', prior=5, after=14):
+def extrapolate_city_data(city_data, field='confirmed', prior=5, after=14, order=1):
     daystamps = [
         int(datetime.datetime.strptime(day['date'], '%Y-%m-%d').timestamp() / (24 * 3600))
         for day in city_data
     ]
 
-    prior_index = min(len(city_data[field]), prior)
-    fit = numpy.polyfit(daystamps[-prior_index:], city_data[field][-prior_index:], 1)
+    if len(city_data[field]) < prior:
+        # not enough data
+        return [], []
+
+    fit = numpy.polyfit(daystamps[-prior:], city_data[field][-prior:], order)
     p = numpy.poly1d(fit)
 
     latest_date = max(daystamps)
@@ -65,7 +68,7 @@ def extrapolate_data(city_data, field='confirmed', prior=5, after=14):
     return extra_days, extra_data
 
 
-def extrapolate(data, prior=5, after=14):
+def extrapolate(data, prior=5, after=14, order=2):
 
     extrapolated = []
 
@@ -79,8 +82,11 @@ def extrapolate(data, prior=5, after=14):
         is_last = False
         extrapolation = True
 
-        days, confirmed = extrapolate_data(city_data, field='confirmed', prior=prior, after=after)
-        days, deaths = extrapolate_data(city_data, field='deaths', prior=prior, after=after)
+        days, confirmed = extrapolate_city_data(city_data, field='confirmed', prior=prior, after=after, order=order)
+        days, deaths = extrapolate_city_data(city_data, field='deaths', prior=prior, after=after, order=order)
+
+        if not days or not confirmed or not deaths:
+            continue
 
         data = [
             (
@@ -112,9 +118,10 @@ if __name__ == "__main__":
     parser.add_argument('output')
     parser.add_argument('--prior', type=int, default=14)
     parser.add_argument('--after', type=int, default=14)
+    parser.add_argument('--order', type=int, default=2)
 
     args = parser.parse_args()
 
     data = load_data(args.input)
-    e = extrapolate(data, args.prior, args.after)
+    e = extrapolate(data, args.prior, args.after, args.order)
     save(e, data.dtype.names, args.output)
