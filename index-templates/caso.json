@@ -1,5 +1,5 @@
 {
-    "index_patterns": ["caso"],
+    "index_patterns": ["caso", "caso-extra"],
     "mappings": {
         "properties": {
             "confirmed": {
