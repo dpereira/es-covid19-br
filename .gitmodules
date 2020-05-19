@@ -3,4 +3,4 @@
 	url = https://github.com/turicas/covid19-br.git
 [submodule "elastic-stack"]
 	path = elastic-stack
-	url = git@github.com:dpereira/elastic-stack.git
+	url = https://github.com/dpereira/es-covid19-br.git
