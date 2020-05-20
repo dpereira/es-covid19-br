@@ -4,21 +4,49 @@ import datetime
 import numpy
 import sys
 
-dtypes = {
-    'caso.csv': [
-        ('date', 'U10'),
-        ('state', 'U2'),
-        ('city', 'S128'),
-        ('place_type','U8'),
-        ('confirmed', int),
-        ('deaths', int),
-        ('order_for_place', int),
-        ('is_last', 'U5'),
-        ('estimated_population_2019', int),
-        ('city_ibge_code', int),
-        ('confirmed_per_100k_inhabitants', 'U32'),
-        ('death_rate', 'U32')
-    ]
+caso_full_dtype = [
+    ('city', 'S128'),
+    ('city_ibge_code', int),
+    ('date_2', 'U10'),
+    ('epidemiological_week', int),
+    ('estimated_population_2019', int),
+    ('is_last', 'U5'),
+    ('is_repeated', 'U5'),
+    ('confirmed', int),
+    ('confirmed_per_100k_inhabitants',float),
+    ('date', 'U10'),
+    ('death_rate', 'U32'),
+    ('deaths', int),
+    ('order_for_place', int),
+    ('place_type','U8'),
+    ('state', 'U2'),
+    ('new_confirmed', int),
+    ('new_deaths', int)
+]
+
+caso_dtype = [
+    ('date', 'U10'),
+    ('state', 'U2'),
+    ('city', 'S128'),
+    ('place_type','U8'),
+    ('confirmed', int),
+    ('deaths', int),
+    ('order_for_place', int),
+    ('is_last', 'U5'),
+    ('estimated_population_2019', int),
+    ('city_ibge_code', int),
+    ('confirmed_per_100k_inhabitants', float),
+    ('death_rate', 'U32')
+]
+
+input_dtypes = {
+    'caso_full.csv': caso_full_dtype,
+    'caso.csv': caso_dtype
+}
+
+output_dtypes = {
+    'caso-extra.csv': caso_dtype,
+    'caso.csv': caso_dtype
 }
 
 
@@ -37,7 +65,7 @@ def cities_data(data):
 
 def load_data(input):
     with open(input, 'r') as df:
-        dtype = dtypes.get(input.split('/')[-1])
+        dtype = input_dtypes.get(input.split('/')[-1])
 
         if dtype:
             converters = { i: lambda x: x or 0 for i in range(len(dtype))}
@@ -124,4 +152,7 @@ if __name__ == "__main__":
 
     data = load_data(args.input)
     e = extrapolate(data, args.prior, args.after, args.order)
-    save(e, data.dtype.names, args.output)
+
+    output = args.output
+    output_dtype = output_dtypes.get(output.split('/')[-1])
+    save(e, [name for (name, _) in output_dtype], output)

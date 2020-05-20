@@ -65,8 +65,9 @@ download: $(DATA_OUTPUT_DIR)
 	curl https://data.brasil.io/dataset/covid19/boletim.csv.gz --output $(DATA_OUTPUT_DIR)/boletim.csv.gz
 	curl https://data.brasil.io/dataset/covid19/obito_cartorio.csv.gz --output $(DATA_OUTPUT_DIR)/obito_cartorio.csv.gz
 	curl https://data.brasil.io/dataset/covid19/caso.csv.gz --output $(DATA_OUTPUT_DIR)/caso.csv.gz
+	curl https://data.brasil.io/dataset/covid19/caso_full.csv.gz --output $(DATA_OUTPUT_DIR)/caso_full.csv.gz
 
-collect: $(ES_STACK)/data/caso.csv $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv
+collect: $(ES_STACK)/data/caso.csv $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv $(ES_STACK)/data/caso_full.csv
 
 extrapolate: $(ES_STACK)/data/caso-extra.csv
 
@@ -75,7 +76,7 @@ $(DATA_OUTPUT_DIR)/%.gz:
 	-make -C $(DATA) docker-run
 	sudo chown -R ${USER} $(DATA_OUTPUT_DIR)
 
-$(ES_STACK)/data/%-extra.csv: $(ES_STACK)/data/%.csv
+$(ES_STACK)/data/%-extra.csv: $(ES_STACK)/data/%_full.csv
 	python extrapolation/extrapolation.py $< $@ --prior 30 --after 30 --order 2
 
 $(ES_STACK)/data/%.csv: $(DATA_OUTPUT_DIR)/%.csv.gz
