@@ -2,7 +2,7 @@
 	setup-docker build run recollect-data reload-data download \
 	collect templates pipeline export-kibana import-kibana commit-containers \
 	tag-gcr push-gcr tag-hub push-hub clean deploy-gcr depoy-hub tag-treescale \
-	push-treescale deploy-treescale extrapolate
+	push-treescale deploy-treescale extrapolate extract pdf-extract
 
 OS=$(shell uname -s)
 DATA=covid19-br
@@ -25,6 +25,7 @@ setup:
 	make build
 	make download
 	pip install -r extrapolation/requirements.txt
+	pip install -r pdf-scrapper/requirements.tx
 
 build: pipeline
 	make -C $(ES_STACK) build
@@ -44,7 +45,7 @@ run: $(DATA_OUTPUT_DIR) setup-docker collect templates pipeline
 stop:
 	make -C $(ES_STACK) stop
 
-update-data: clean download extrapolate reload-data run
+update-data: clean download extract extrapolate reload-data run
 
 recollect-data: build-data
 	make -C $(ES_STACK) down
@@ -69,6 +70,11 @@ download: $(DATA_OUTPUT_DIR)
 collect: $(ES_STACK)/data/caso.csv $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv
 
 extrapolate: $(ES_STACK)/data/caso-extra.csv
+
+extract: pdf-extract
+
+pdf-extract:
+	python pdf-scrapper/scrapper.py data/pdf/chapeco elastic-stack/data/chapeco.csv
 
 $(DATA_OUTPUT_DIR)/%.gz:
 	make $(DATA_OUTPUT_DIR)
