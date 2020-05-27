@@ -64,7 +64,7 @@ def enhance(results):
     try:
         results['active'] = results['confirmed'] - results['confirmed_recovered']
     except KeyError:
-        results['active'] = 0
+        pass
 
 
 def convert(value):
@@ -85,8 +85,12 @@ def write_csv(data, output):
 
         writer.writerow(headers)
 
+        previous = {}
+
         for entry in data:
-            writer.writerow([entry.get(h, '') for h in headers])
+            filled = { h: entry.get(h, previous.get(h, '')) for h in headers }
+            writer.writerow([filled[h] for h in headers])
+            previous = filled
 
 
 def process_files(input_directory, output_csv):
