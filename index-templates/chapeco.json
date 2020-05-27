@@ -1,0 +1,22 @@
+{
+    "index_patterns": ["chapeco"],
+    "mappings": {
+        "dynamic_templates": [
+            {
+                "long_fields": {
+                    "match_pattern": "regex",
+                    "match": "^confirmed.*|discarded|suspected.*|tracked|active$", 
+                    "mapping": {
+                        "type": "long"
+                    }
+                }
+            }        
+        ],
+        "properties": {
+            "date": {
+                "type": "date",
+                "format": "strict_date_optional_time"
+            }
+        }
+    }
+}

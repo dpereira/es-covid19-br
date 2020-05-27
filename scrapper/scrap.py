@@ -1,9 +1,11 @@
 import PyPDF2
 import csv
+import datetime
 import os
 import os.path
 import re
 import sys
+
 
 def extract_text(pdf_filename):
     text = ''
@@ -18,7 +20,7 @@ def extract_text(pdf_filename):
     return text
 
 
-def extract_data(text):
+def extract_data(text, pdf_filename):
     regex = {
         'tracked': '\n(.+)\nmonitorados',
         'discarded': '\n(.+)\ndescartados',
@@ -35,7 +37,13 @@ def extract_data(text):
         'suspected_home_isolation': '\n(.+)\nisolamento',
     }
 
-    results = {}
+    date_separtor_index = pdf_filename.find('_')
+    date = pdf_filename[:date_separtor_index]
+    parsed_date = datetime.datetime.strptime(date, '%d%m%Y')
+    
+    results = {
+        'date': parsed_date.strftime('%Y-%m-%d')
+    }
 
     search_from = 0
 
@@ -43,10 +51,20 @@ def extract_data(text):
         m = re.search(pattern, text[search_from:], flags = re.IGNORECASE | re.MULTILINE)
 
         if m:
-            results[name] = m.groups()[0].replace('.','')
+            results[name] = convert(m.groups()[0].replace('.', ''))
             search_from += m.span()[1]
 
+
+    enhance(results)
+
     return results
+
+
+def enhance(results):
+    try:
+        results['active'] = results['confirmed'] - results['confirmed_recovered']
+    except KeyError:
+        results['active'] = 0
 
 
 def convert(value):
@@ -68,7 +86,7 @@ def write_csv(data, output):
         writer.writerow(headers)
 
         for entry in data:
-            writer.writerow([convert(entry.get(h, 0)) for h in headers])
+            writer.writerow([entry.get(h, '') for h in headers])
 
 
 def process_files(input_directory, output_csv):
@@ -78,7 +96,7 @@ def process_files(input_directory, output_csv):
 
     for pdf_file in pdf_files:
         text = extract_text(os.path.join(input_directory, pdf_file))
-        data.append(extract_data(text))
+        data.append(extract_data(text, pdf_file))
 
     write_csv(data, output_csv)
 

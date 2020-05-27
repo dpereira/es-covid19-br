@@ -25,7 +25,7 @@ setup:
 	make build
 	make download
 	pip install -r extrapolation/requirements.txt
-	pip install -r pdf-scrapper/requirements.tx
+	pip install -r scrapper/requirements.tx
 
 build: pipeline
 	make -C $(ES_STACK) build
@@ -74,7 +74,7 @@ extrapolate: $(ES_STACK)/data/caso-extra.csv
 extract: pdf-extract
 
 pdf-extract:
-	python pdf-scrapper/scrapper.py data/pdf/chapeco elastic-stack/data/chapeco.csv
+	python scrapper/scrap.py data/pdf/chapeco elastic-stack/data/chapeco.csv
 
 $(DATA_OUTPUT_DIR)/%.gz:
 	make $(DATA_OUTPUT_DIR)
@@ -82,7 +82,7 @@ $(DATA_OUTPUT_DIR)/%.gz:
 	sudo chown -R ${USER} $(DATA_OUTPUT_DIR)
 
 $(ES_STACK)/data/%-extra.csv: $(ES_STACK)/data/%.csv
-	python extrapolation/extrapolation.py $< $@ --prior 30 --after 30 --order 2
+	python extrapolation/extrapolate.py $< $@ --prior 30 --after 30 --order 2
 
 $(ES_STACK)/data/%.csv: $(DATA_OUTPUT_DIR)/%.csv.gz
 	gunzip -c $< > $@
