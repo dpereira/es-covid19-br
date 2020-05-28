@@ -95,7 +95,7 @@ $(CSV_DATA_DIR)/%.gz: $(CSV_DATA_DIR)
 	sudo chown -R ${USER} $(CSV_DATA_DIR)
 
 $(ES_STACK)/data/%-extra.csv: $(ES_STACK)/data/%.csv
-	python extrapolation/extrapolate.py $< $@ --prior 30 --after 30 --order 2
+	python extrapolation/extrapolate.py $< $@ --prior 60 --after 30 --order 2
 
 $(ES_STACK)/data/%.csv: $(CSV_DATA_DIR)/%.csv.gz
 	gunzip -c $< > $@
