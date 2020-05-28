@@ -7,10 +7,19 @@
 OS=$(shell uname -s)
 DATA=covid19-br
 ES_STACK=elastic-stack
-DATA_OUTPUT_DIR=data/output
+CSV_DATA_DIR=data/csv/
+PDF_DATA_DIR=data/pdf/
+CHAPECO_DATA_DIR=$(PDF_DATA_DIR)/chapeco/
 
-$(DATA_OUTPUT_DIR):
-	mkdir -p $(DATA_OUTPUT_DIR)
+$(CSV_DATA_DIR):
+	mkdir -p $(CSV_DATA_DIR)
+	sudo chown -R ${USER} $(CSV_DATA_DIR)
+
+$(PDF_DATA_DIR):
+	mkdir -p $(PDF_DATA_DIR)
+
+$(CHAPECO_DATA_DIR): $(PDF_DATA_DIR)
+	mkdir -p $(CHAPECO_DATA_DIR)
 
 setup-docker:
 ifeq "$(OS)" "Linux"
@@ -39,7 +48,7 @@ repository:
 backup: repository
 	curl -XPUT "http://localhost:9200/_snapshot/backup/snapshot_$(shell date +%s)?wait_for_completion=true"
 
-run: $(DATA_OUTPUT_DIR) setup-docker collect templates pipeline 	
+run: $(CSV_DATA_DIR) setup-docker collect templates pipeline 	
 	make -C $(ES_STACK) run
 
 stop:
@@ -54,18 +63,23 @@ recollect-data: build-data
 	make build
 
 clean:
-	-rm -rf $(DATA_OUTPUT_DIR)/*
+	-rm -rf $(CSV_DATA_DIR)/*
+	-rm -rf $(PDF_DATA_DIR)/*
 	-rm -f $(ES_STACK)/data/*
 
 reload-data:
 	make -C $(ES_STACK) down
 	make build
 
-download: $(DATA_OUTPUT_DIR)
-	sudo chown -R ${USER} $(DATA_OUTPUT_DIR)
-	curl https://data.brasil.io/dataset/covid19/boletim.csv.gz --output $(DATA_OUTPUT_DIR)/boletim.csv.gz
-	curl https://data.brasil.io/dataset/covid19/obito_cartorio.csv.gz --output $(DATA_OUTPUT_DIR)/obito_cartorio.csv.gz
-	curl https://data.brasil.io/dataset/covid19/caso.csv.gz --output $(DATA_OUTPUT_DIR)/caso.csv.gz
+download-brasil-io: $(CSV_DATA_DIR)
+	curl https://data.brasil.io/dataset/covid19/boletim.csv.gz --output $(CSV_DATA_DIR)/boletim.csv.gz
+	curl https://data.brasil.io/dataset/covid19/obito_cartorio.csv.gz --output $(CSV_DATA_DIR)/obito_cartorio.csv.gz
+	curl https://data.brasil.io/dataset/covid19/caso.csv.gz --output $(CSV_DATA_DIR)/caso.csv.gz
+
+download-chapeco-sms: $(CHAPECO_DATA_DIR)
+	wget --content-disposition -nd  -r -l 1  -R 'seguranca*' -A DocumentoArquivo,pdf https://www.chapeco.sc.gov.br/documentos/54/documentoCategoria -P data/pdf/chapeco/
+
+download: download-brasil-io download-chapeco-sms
 
 collect: $(ES_STACK)/data/caso.csv $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv
 
@@ -76,15 +90,14 @@ extract: pdf-extract
 pdf-extract:
 	python scrapper/scrap.py data/pdf/chapeco elastic-stack/data/chapeco.csv
 
-$(DATA_OUTPUT_DIR)/%.gz:
-	make $(DATA_OUTPUT_DIR)
+$(CSV_DATA_DIR)/%.gz: $(CSV_DATA_DIR)
 	-make -C $(DATA) docker-run
-	sudo chown -R ${USER} $(DATA_OUTPUT_DIR)
+	sudo chown -R ${USER} $(CSV_DATA_DIR)
 
 $(ES_STACK)/data/%-extra.csv: $(ES_STACK)/data/%.csv
 	python extrapolation/extrapolate.py $< $@ --prior 30 --after 30 --order 2
 
-$(ES_STACK)/data/%.csv: $(DATA_OUTPUT_DIR)/%.csv.gz
+$(ES_STACK)/data/%.csv: $(CSV_DATA_DIR)/%.csv.gz
 	gunzip -c $< > $@
 
 templates:
