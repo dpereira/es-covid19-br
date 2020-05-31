@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+    extrapolation:
+        build:
+            context: extrapolation
+            network: host
+        volumes:
+            - type: bind
+              source: ./elastic-stack/data
+              target: /data
+        user: ${USER_ID}
+
+    scrapper:
+        build:
+            context: scrapper
+            network: host
+        volumes:
+            - type: bind
+              source: ./data
+              target: /input-data
+            - type: bind
+              source: ./elastic-stack/data
+              target: /output-data
+        user: ${USER_ID}
+
+    downloader:
+        build:
+            context: downloader
+            network: host
+        volumes:
+            - type: bind
+              source: ./data
+              target: /data
+        user: ${USER_ID}
+
+    elasticdump:
+        build:
+            context: elasticdump
+            network: host
+        volumes:
+            - type: bind
+              source: ./kibana
+              target: /kibana
+        user: ${USER_ID}
+        network_mode: host
