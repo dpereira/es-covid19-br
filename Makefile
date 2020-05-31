@@ -5,7 +5,6 @@
 	push-treescale deploy-treescale extrapolate extract pdf-extract
 
 OS=$(shell uname -s)
-DATA=covid19-br
 ES_STACK=elastic-stack
 CSV_DATA_DIR=data/csv/
 PDF_DATA_DIR=data/pdf/
@@ -56,12 +55,6 @@ stop:
 
 update-data: clean download extract extrapolate reload-data run
 
-recollect-data: build-data
-	make -C $(ES_STACK) down
-	make clean
-	make collect
-	make build
-
 clean:
 	-rm -rf $(CSV_DATA_DIR)/*
 	-rm -rf $(PDF_DATA_DIR)/*
@@ -97,9 +90,6 @@ extract: pdf-extract
 pdf-extract:
 	docker-compose run scrapper python scrapper/scrap.py /input-data/pdf/chapeco /output-data/chapeco.csv
 
-$(CSV_DATA_DIR)/%.gz: $(CSV_DATA_DIR)
-	-make -C $(DATA) docker-run
-
 $(ES_STACK)/data/%-extra.csv: $(ES_STACK)/data/%.csv
 	docker-compose run extrapolation python /extrapolation/extrapolate.py /data/`basename $<` /data/`basename $@` --prior 60 --after 30 --order 2
 
@@ -127,37 +117,3 @@ import-kibana:
 		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/.kibana_1.mapping --type=mapping
 	-docker-compose run elasticdump \
 		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/.kibana_1.data --type=data
-
-commit-containers:
-	docker commit stack_elasticsearch_7.6.2 stack_elasticsearch_7.6.2
-	docker commit stack_kibana_7.6.2 stack_kibana_7.6.2
-
-tag-gcr:
-	docker tag stack_elasticsearch_7.6.2 gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
-	docker tag stack_kibana_7.6.2 gcr.io/es-covd19-br/stack_kibana_7.6.2
-
-tag-hub:
-	docker tag stack_elasticsearch_7.6.2 diegop/stack_elasticsearch_7.6.2
-	docker tag stack_kibana_7.6.2 diegop/stack_kibana_7.6.2
-
-tag-treescale:
-	docker tag stack_kibana_7.6.2 repo.treescale.com/dpereira/es-covid19-br/stack_kibana_7.6.2
-	docker tag stack_elasticsearch_7.6.2 repo.treescale.com/dpereira/es-covid19-br/stack_elasticsearch_7.6.2
-
-push-gcr:
-	docker push gcr.io/es-covd19-br/stack_elasticsearch_7.6.2
-	docker push gcr.io/es-covd20-br/stack_kibana_7.6.2
-
-push-hub:
-	docker push diegop/stack_kibana_7.6.2
-	docker push diegop/stack_elasticsearch_7.6.2
-
-push-treescale:
-	docker push repo.treescale.com/dpereira/es-covid19-br/stack_kibana_7.6.2
-	docker push repo.treescale.com/dpereira/es-covid19-br/stack_elasticsearch_7.6.2
-
-deploy-gcr: commit-containers tag-gcr push-gcr
-
-deploy-hub: commit-containers tag-hub push-hub
-
-deploy-treescale: commit-containers tag-treescale push-treescale
