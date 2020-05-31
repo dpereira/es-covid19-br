@@ -1,6 +1,0 @@
-[submodule "covid19-br"]
-	path = covid19-br
-	url = https://github.com/turicas/covid19-br.git
-[submodule "elastic-stack"]
-	path = elastic-stack
-	url = https://github.com/dpereira/elastic-stack.git
