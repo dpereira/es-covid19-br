@@ -104,18 +104,15 @@ templates:
 pipeline:
 	cp logstash/logstash.conf $(ES_STACK)/stack/custom/logstash-data-loader/files/usr/share/logstash/pipeline/logstash.conf
 
-kibana:
-	mkdir kibana
-
-export-kibana: kibana
-	-rm -f kibana/.kibana*
+export-kibana:
+	-rm -f kibana/data/.kibana*
 	-docker-compose run elasticdump \
-		elasticdump --input http://localhost:9200/.kibana_1 --output /kibana/.kibana_1.mapping --type=mapping
+		elasticdump --input http://localhost:9200/.kibana_1 --output /kibana/data/.kibana_1.mapping --type=mapping
 	-docker-compose run elasticdump \
-		elasticdump --input http://localhost:9200/.kibana_1 --output /kibana/.kibana_1.data --type=data
+		elasticdump --input http://localhost:9200/.kibana_1 --output /kibana/data/.kibana_1.data --type=data
 
 import-kibana:
 	-docker-compose run elasticdump \
-		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/.kibana_1.mapping --type=mapping
+		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/data/.kibana_1.mapping --type=mapping
 	-docker-compose run elasticdump \
-		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/.kibana_1.data --type=data
+		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/data/.kibana_1.data --type=data

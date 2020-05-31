@@ -76,15 +76,6 @@ $ make import-kibana
 
 Recarregue o Kibana, caso o tenha aberto no browser (full reload), para que as alterações façam efeito.
 
-Se você quiser executar a coleta localmente, ao invés de baixar os dados já consolidados, pode rodar:
-
-```
-$ make export-kibana recollect-data run 
-$ make import-kibana
-```
-
-E recarregar a aplicação no browser da mesma forma.
-
 ## Configurando
 
 A ingestão dos dados é feita no Elasticsearch em um índice por arquivo .csv gerado pelo projeto de coleta (covid19-br).
@@ -102,13 +93,13 @@ Contribuições de código podem ser feitas via PR normalmente.
 
 Caso deseje incluir ou modificar algum dashboard, query, visualização ou qualquer
 dado relacionado ao Kibana, localize ou crie um diretório adequado para sua alteração
-no diretório `saved-objects`. [Exporte](https://www.elastic.co/guide/en/kibana/current/managing-saved-objects.html) 
+no diretório `kibana/saved-objects`. [Exporte](https://www.elastic.co/guide/en/kibana/current/managing-saved-objects.html) 
 os objetos relevantes do Kibana para a sua alteração,
 neste diretório, faça um commit com eles e envie um PR.
 
 No PR, descreva a motivação e a alteração na maior quantidade de detalhes possível.
 
-Você pode querer revisar as Issues que temos abertas.
+Você pode querer revisar as Issues abertas.
 
 ## Referências
 
