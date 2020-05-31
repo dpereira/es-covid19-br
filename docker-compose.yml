@@ -10,6 +10,7 @@ services:
               source: ./elastic-stack/data
               target: /data
         user: ${USER_ID}
+        network_mode: host
 
     scrapper:
         build:
@@ -23,6 +24,7 @@ services:
               source: ./elastic-stack/data
               target: /output-data
         user: ${USER_ID}
+        network_mode: host
 
     downloader:
         build:
@@ -33,6 +35,7 @@ services:
               source: ./data
               target: /data
         user: ${USER_ID}
+        network_mode: host
 
     elasticdump:
         build:

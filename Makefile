@@ -40,16 +40,13 @@ build: pipeline
 	make -C $(ES_STACK) build
 	docker-compose build
 
-build-data:
-	make -C $(DATA) docker-build
-
 repository:
 	docker-compose run downloader \
-		curl -XPUT http://elasticsearch:9200/_snapshot/backup -d '{"type": "fs", "settings": {"location": "/snapshots"}}' -H 'Content-Type: application/json'
+		curl -XPUT http://localhost:9200/_snapshot/backup -d '{"type": "fs", "settings": {"location": "/snapshots"}}' -H 'Content-Type: application/json'
 
 backup: repository
 	docker-compose run downloader \
-		curl -XPUT "http://elasticsearch:9200/_snapshot/backup/snapshot_$(shell date +%s)?wait_for_completion=true"
+		curl -XPUT "http://localhost:9200/_snapshot/backup/snapshot_$(shell date +%s)?wait_for_completion=true"
 
 run: $(CSV_DATA_DIR) setup-docker collect templates pipeline 	
 	make -C $(ES_STACK) run
