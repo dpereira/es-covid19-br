@@ -34,6 +34,8 @@ setup:
 	make setup-docker
 	make build
 	make download
+	make extract
+	make extrapolate
 
 build: pipeline
 	make -C $(ES_STACK) build
