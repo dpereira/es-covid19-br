@@ -31,6 +31,7 @@ endif
 setup:
 	git submodule update --init
 	make -C $(ES_STACK) setup
+	pip install -r requirements.txt
 	make setup-docker
 	make build
 	make download

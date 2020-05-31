@@ -15,11 +15,7 @@ distribuição destes dados.
 
 Você irá precisar de:
  - docker 19+
- - node 10+
- - npm
  - python 3+
- - curl
- - wget
  - sudo
 
 ```
