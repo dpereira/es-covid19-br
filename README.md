@@ -19,6 +19,7 @@ Você irá precisar de:
  - npm
  - python 3+
  - curl
+ - wget
  - sudo
 
 ```
