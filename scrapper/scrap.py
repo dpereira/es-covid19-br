@@ -79,6 +79,7 @@ def convert(value):
 
 def write_csv(data, output):
     headers = sorted(list(data[0].keys()))
+    data = sorted(data, key=lambda d: d['date'])
 
     with open(output, 'w+') as f:
         writer = csv.writer(f)
