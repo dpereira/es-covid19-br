@@ -1,0 +1,3 @@
+[submodule "elastic-stack"]
+	path = elastic-stack
+	url = https://github.com/dpereira/elastic-stack.git
