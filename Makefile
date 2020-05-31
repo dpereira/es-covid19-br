@@ -34,7 +34,7 @@ setup:
 	make build
 	make download
 	pip install -r extrapolation/requirements.txt
-	pip install -r scrapper/requirements.tx
+	pip install -r scrapper/requirements.txt
 
 build: pipeline
 	make -C $(ES_STACK) build
@@ -77,7 +77,7 @@ download-brasil-io: $(CSV_DATA_DIR)
 	curl https://data.brasil.io/dataset/covid19/caso.csv.gz --output $(CSV_DATA_DIR)/caso.csv.gz
 
 download-chapeco-sms: $(CHAPECO_DATA_DIR)
-	wget --content-disposition -nd  -r -l 1  -R 'seguranca*' -A DocumentoArquivo,pdf https://www.chapeco.sc.gov.br/documentos/54/documentoCategoria -P data/pdf/chapeco/
+	wget -c --content-disposition -nd  -r -l 1  -R 'seguranca*' -A DocumentoArquivo,pdf https://www.chapeco.sc.gov.br/documentos/54/documentoCategoria -P data/pdf/chapeco/
 
 download: download-brasil-io download-chapeco-sms
 
