@@ -99,7 +99,7 @@ $(ES_STACK)/data/%.csv: $(CSV_DATA_DIR)/%.csv.gz
 	gunzip -c $< > $@
 
 templates:
-	cp index-templates/* $(ES_STACK)/index-templates/
+	cp elasticsearch/index-templates/* $(ES_STACK)/index-templates/
 
 pipeline:
 	cp logstash/logstash.conf $(ES_STACK)/stack/custom/logstash-data-loader/files/usr/share/logstash/pipeline/logstash.conf

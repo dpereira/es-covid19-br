@@ -1,15 +1,15 @@
 # es-covid19-br
 
-Empacota os dados de [turicas/covid19-br](https://github.com/turicas/covid19-br) em uma instância Kibana/Elasticsearch,
-facilitando acesso e consulta.
+Empacota os dados de [turicas/covid19-br](https://github.com/turicas/covid19-br)
+em uma instância Kibana/Elasticsearch, facilitando acesso e consulta.
 
 ## Licenças
 
 Os scripts neste repositório se encontram sob [Apache License v2.0](https://www.apache.org/licenses/LICENSE-2.0), mas os dados carregados
 são distribuídos pela licensa descrita em [turicas/covid19-br](https://github.com/turicas/covid19-br#licen%C3%A7a).
 
-Caso inclua visualizações que usam estes dados em algum projeto, atente para as condições de uso e
-distribuição destes dados.
+Caso inclua visualizações que usam estes dados em algum projeto,
+atente para as condições de uso e distribuição destes dados.
 
 ## Dependências
 
@@ -81,7 +81,7 @@ Recarregue o Kibana, caso o tenha aberto no browser (full reload), para que as a
 A ingestão dos dados é feita no Elasticsearch em um índice por arquivo .csv gerado pelo projeto de coleta (covid19-br).
 Para um dado arquivo `nome.csv` é criado um índice chamado `nome` no Elasticsearch. Para que as queries e dashboards funcionem bem, é preciso
 prover _mappings_ para que os dados sejam interpretados corretamente pelo Elasticsearch. Um mapping de exemplo para o arquivo/índice
-de casos (`caso.csv`/`caso`) é incluído no diretório `index-templates`, com o nome `caso.json`. Outros templates com os mappings necessários
+de casos (`caso.csv`/`caso`) é incluído no diretório `elasticsearch/index-templates`, com o nome `caso.json`. Outros templates com os mappings necessários
 podem ser incluídos neste diretório, seguindo a convenção `nome.json`, onde `nome` é o nome do índice/arquivo .csv.
 
 Pode ser também necessária a customização do pipeline ou dos filtros usados pelo logstash usado na ingestão dos dados.
