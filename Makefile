@@ -9,7 +9,7 @@ ES_STACK=elastic-stack
 CSV_DATA_DIR=data/csv/
 PDF_DATA_DIR=data/pdf/
 CHAPECO_DATA_DIR=$(PDF_DATA_DIR)/chapeco/
-
+PROJECT_NAME=$(shell basename `pwd`)
 
 %: export USER_ID:=$(shell echo -n `id -u`:`id -g`)
 
@@ -29,7 +29,7 @@ endif
 
 setup:
 	git submodule update --init
-	make -C $(ES_STACK) setup
+	PROJECT_NAME=$(PROJECT_NAME) make -C $(ES_STACK) setup
 	pip install -r requirements.txt
 	make setup-docker
 	make build
@@ -38,7 +38,7 @@ setup:
 	make extrapolate
 
 build: pipeline
-	make -C $(ES_STACK) build
+	PROJECT_NAME=$(PROJECT_NAME) make -C $(ES_STACK) build
 	docker-compose build
 
 repository:
@@ -50,10 +50,10 @@ backup: repository
 		curl -XPUT "http://localhost:9200/_snapshot/backup/snapshot_$(shell date +%s)?wait_for_completion=true"
 
 run: $(CSV_DATA_DIR) setup-docker collect templates pipeline 	
-	make -C $(ES_STACK) run
+	PROJECT_NAME=$(PROJECT_NAME) make -C $(ES_STACK) run
 
 stop:
-	make -C $(ES_STACK) stop
+	PROJECT_NAME=$(PROJECT_NAME) make -C $(ES_STACK) stop
 
 update-data: clean download extract extrapolate reload-data run
 
@@ -63,7 +63,7 @@ clean:
 	-rm -f $(ES_STACK)/data/*
 
 reload-data:
-	make -C $(ES_STACK) down
+	PROJECT_NAME=$(PROJECT_NAME) make -C $(ES_STACK) down
 	make build
 
 download-brasil-io: $(CSV_DATA_DIR)
