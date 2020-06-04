@@ -5,7 +5,7 @@
             {
                 "long_fields": {
                     "match_pattern": "regex",
-                    "match": "^confirmed.*|discarded|suspected.*|tracked|active$", 
+                    "match": "^confirmed.*|discarded|suspected.*|tracked|active|tests.*$", 
                     "mapping": {
                         "type": "long"
                     }

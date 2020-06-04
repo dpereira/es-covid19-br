@@ -1,11 +1,10 @@
-import PyPDF2
 import csv
 import datetime
 import os
 import os.path
+import PyPDF2
 import re
 import sys
-
 
 def extract_text(pdf_filename):
     text = ''
@@ -37,11 +36,11 @@ def extract_data(text, pdf_filename):
         'suspected_home_isolation': '\n(.+)\nisolamento',
     }
 
-    date_separtor_index = pdf_filename.find('_')
-    date = pdf_filename[:date_separtor_index]
+    date_separator_index = pdf_filename.find('_')
+    date = pdf_filename[:date_separator_index]
     parsed_date = datetime.datetime.strptime(date, '%d%m%Y')
     
-    results = {
+    data = {
         'date': parsed_date.strftime('%Y-%m-%d')
     }
 
@@ -51,27 +50,40 @@ def extract_data(text, pdf_filename):
         m = re.search(pattern, text[search_from:], flags = re.IGNORECASE | re.MULTILINE)
 
         if m:
-            results[name] = convert(m.groups()[0].replace('.', ''))
+            data[name] = convert(m.groups()[0].replace('.', ''))
             search_from += m.span()[1]
 
-
-    enhance(results)
-
-    return results
+    return data
 
 
-def enhance(results):
+def enhance_datapoint(data, prior):
     try:
-        results['active'] = results['confirmed'] - results['confirmed_recovered']
+        data['active'] = data['confirmed'] - data['confirmed_recovered']
     except KeyError:
         pass
+
+    data['tests_performed'] = 0
+
+    if prior:
+        try:
+            data['tests_performed'] = data['confirmed'] + data['discarded'] - (prior['confirmed'] + prior['discarded'])
+        except KeyError:
+            pass
+
+
+def enhance(dataset):
+    prior = None
+
+    for data in dataset:
+        enhance_datapoint(data, prior)
+        prior = data
 
 
 def convert(value):
     try:
         converted = int(value)
     except ValueError as e:
-        print(f'warning parsing value: {e}')
+        print(f'error converting `{value}` to int: {e}')
         converted = 0
 
     return converted
@@ -79,7 +91,6 @@ def convert(value):
 
 def write_csv(data, output):
     headers = sorted(list(data[0].keys()))
-    data = sorted(data, key=lambda d: d['date'])
 
     with open(output, 'w+') as f:
         writer = csv.writer(f)
@@ -103,6 +114,8 @@ def process_files(input_directory, output_csv):
         text = extract_text(os.path.join(input_directory, pdf_file))
         data.append(extract_data(text, pdf_file))
 
+    data = sorted(data, key=lambda d: d['date'])
+    enhance(data)
     write_csv(data, output_csv)
 
 
