@@ -9,7 +9,9 @@ ES_STACK=elastic-stack
 CSV_DATA_DIR=data/csv/
 PDF_DATA_DIR=data/pdf/
 CHAPECO_DATA_DIR=$(PDF_DATA_DIR)/chapeco/
+ifndef PROJECT_NAME
 PROJECT_NAME=$(shell basename `pwd`)
+endif
 
 %: export USER_ID:=$(shell echo -n `id -u`:`id -g`)
 
