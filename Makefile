@@ -123,7 +123,7 @@ kibana-snapshot: kibana-repository
 		curl \
 			-XPUT \
 			http://localhost:9200/_snapshot/kibana/kibana?wait_for_completion=true \
-			-d '{"indices": ".kibana_*", "include_global_state": true}' \
+			-d '{"indices": ".kibana*,geojs*", "include_global_state": true}' \
 			-H 'Content-Type: application/json'
 
 kibana-restore: kibana-repository
