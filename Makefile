@@ -106,6 +106,34 @@ templates:
 pipeline:
 	cp logstash/logstash.conf $(ES_STACK)/stack/custom/logstash-data-loader/files/usr/share/logstash/pipeline/logstash.conf
 
+kibana-repository:
+	docker-compose run downloader \
+		curl \
+			-XPUT \
+			http://localhost:9200/_snapshot/kibana \
+			-d '{ "type": "fs", "settings": {"location": "backup"}}' \
+			-H 'Content-Type: application/json'
+
+kibana-snapshot: kibana-repository
+	docker-compose run downloader \
+		curl \
+			-XDELETE \
+			http://localhost:9200/_snapshot/kibana/kibana
+	docker-compose run downloader \
+		curl \
+			-XPUT \
+			http://localhost:9200/_snapshot/kibana/kibana?wait_for_completion=true \
+			-d '{"indices": ".kibana_*", "include_global_state": true}' \
+			-H 'Content-Type: application/json'
+
+kibana-restore: kibana-repository
+	docker-compose run downloader manage-kibana-index.sh localhost close
+	docker-compose run downloader \
+		curl \
+			-XPOST \
+			http://localhost:9200/_snapshot/kibana/kibana/_restore?wait_for_completion=true
+	docker-compose run downloader manage-kibana-index.sh localhost open
+
 export-kibana:
 	-rm -f kibana/data/.kibana*
 	-docker-compose run elasticdump \
