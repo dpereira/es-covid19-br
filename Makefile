@@ -125,8 +125,10 @@ kibana-snapshot: kibana-repository
 			http://localhost:9200/_snapshot/kibana/kibana?wait_for_completion=true \
 			-d '{"indices": ".kibana*,geojs*", "include_global_state": true}' \
 			-H 'Content-Type: application/json'
+	tar cvpfz snapshots.tgz elastic-stack/snapshots/
 
 kibana-restore: kibana-repository
+	tar xvpfz snapshots.tgz
 	docker-compose run downloader manage-kibana-index.sh localhost close
 	docker-compose run downloader \
 		curl \
