@@ -36,14 +36,3 @@ services:
               target: /data
         user: ${USER_ID}
         network_mode: host
-
-    elasticdump:
-        build:
-            context: elasticdump
-            network: host
-        volumes:
-            - type: bind
-              source: ./kibana
-              target: /kibana
-        user: ${USER_ID}
-        network_mode: host

@@ -112,7 +112,7 @@ def save(data, header_names, file_name):
             writer.writerow(row)
 
 
-if __name__ == "__main__":
+def parse_args():
     parser = argparse.ArgumentParser(description='Extrapolate covid-19 data')
     parser.add_argument('input')
     parser.add_argument('output')
@@ -120,8 +120,10 @@ if __name__ == "__main__":
     parser.add_argument('--after', type=int, default=14)
     parser.add_argument('--order', type=int, default=2)
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
+if __name__ == "__main__":
+    args = parse_args()
     data = load_data(args.input)
     e = extrapolate(data, args.prior, args.after, args.order)
     save(e, data.dtype.names, args.output)

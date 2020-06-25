@@ -2,7 +2,8 @@
 	setup-docker build run recollect-data reload-data download \
 	collect templates pipeline export-kibana import-kibana commit-containers \
 	tag-gcr push-gcr tag-hub push-hub clean deploy-gcr depoy-hub tag-treescale \
-	push-treescale deploy-treescale extrapolate extract pdf-extract
+	push-treescale deploy-treescale extrapolate extract pdf-extract kibana-snapshot \
+	kibana-restore
 
 OS=$(shell uname -s)
 ES_STACK=elastic-stack
@@ -106,15 +107,36 @@ templates:
 pipeline:
 	cp logstash/logstash.conf $(ES_STACK)/stack/custom/logstash-data-loader/files/usr/share/logstash/pipeline/logstash.conf
 
-export-kibana:
-	-rm -f kibana/data/.kibana*
-	-docker-compose run elasticdump \
-		elasticdump --input http://localhost:9200/.kibana_1 --output /kibana/data/.kibana_1.mapping --type=mapping
-	-docker-compose run elasticdump \
-		elasticdump --input http://localhost:9200/.kibana_1 --output /kibana/data/.kibana_1.data --type=data
+kibana-repository:
+	docker-compose run downloader \
+		curl \
+			-XPUT \
+			http://localhost:9200/_snapshot/kibana \
+			-d '{ "type": "fs", "settings": {"location": "backup"}}' \
+			-H 'Content-Type: application/json'
 
-import-kibana:
-	-docker-compose run elasticdump \
-		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/data/.kibana_1.mapping --type=mapping
-	-docker-compose run elasticdump \
-		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/data/.kibana_1.data --type=data
+kibana-snapshot: kibana-repository
+	docker-compose run downloader \
+		curl \
+			-XDELETE \
+			http://localhost:9200/_snapshot/kibana/kibana
+	docker-compose run downloader \
+		curl \
+			-XPUT \
+			http://localhost:9200/_snapshot/kibana/kibana?wait_for_completion=true \
+			-d '{"indices": ".kibana*,geojs*", "include_global_state": true}' \
+			-H 'Content-Type: application/json'
+	tar cvpfz snapshots.tgz elastic-stack/snapshots/
+
+kibana-restore: kibana-repository
+	tar xvpfz snapshots.tgz
+	docker-compose run downloader manage-kibana-index.sh localhost close
+	docker-compose run downloader \
+		curl \
+			-XPOST \
+			http://localhost:9200/_snapshot/kibana/kibana/_restore?wait_for_completion=true
+	docker-compose run downloader manage-kibana-index.sh localhost open
+
+export-kibana: kibana-snapshot
+
+import-kibana: kibana-restore
