@@ -2,7 +2,8 @@
 	setup-docker build run recollect-data reload-data download \
 	collect templates pipeline export-kibana import-kibana commit-containers \
 	tag-gcr push-gcr tag-hub push-hub clean deploy-gcr depoy-hub tag-treescale \
-	push-treescale deploy-treescale extrapolate extract pdf-extract
+	push-treescale deploy-treescale extrapolate extract pdf-extract kibana-snapshot \
+	kibana-restore
 
 OS=$(shell uname -s)
 ES_STACK=elastic-stack
@@ -136,15 +137,6 @@ kibana-restore: kibana-repository
 			http://localhost:9200/_snapshot/kibana/kibana/_restore?wait_for_completion=true
 	docker-compose run downloader manage-kibana-index.sh localhost open
 
-export-kibana:
-	-rm -f kibana/data/.kibana*
-	-docker-compose run elasticdump \
-		elasticdump --input http://localhost:9200/.kibana_1 --output /kibana/data/.kibana_1.mapping --type=mapping
-	-docker-compose run elasticdump \
-		elasticdump --input http://localhost:9200/.kibana_1 --output /kibana/data/.kibana_1.data --type=data
+export-kibana: kibana-snapshot
 
-import-kibana:
-	-docker-compose run elasticdump \
-		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/data/.kibana_1.mapping --type=mapping
-	-docker-compose run elasticdump \
-		elasticdump --output http://localhost:9200/.kibana_1 --input /kibana/data/.kibana_1.data --type=data
+import-kibana: kibana-restore
