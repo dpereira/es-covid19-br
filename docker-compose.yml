@@ -12,9 +12,9 @@ services:
         user: ${USER_ID}
         network_mode: host
 
-    scrapper:
+    scraper:
         build:
-            context: scrapper
+            context: scraper
             network: host
         volumes:
             - type: bind
