@@ -60,9 +60,11 @@ stop:
 
 update-data: clean download extract extrapolate reload-data run
 
+clean-pdf:
+	-rm -rf $(PDF_DATA_DIR)/*
+
 clean:
 	-rm -rf $(CSV_DATA_DIR)/*
-	-rm -rf $(PDF_DATA_DIR)/*
 	-rm -f $(ES_STACK)/data/*
 
 reload-data:
