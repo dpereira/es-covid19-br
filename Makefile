@@ -58,7 +58,7 @@ run: $(CSV_DATA_DIR) setup-docker collect templates pipeline
 stop:
 	PROJECT_NAME=$(PROJECT_NAME) make -C $(ES_STACK) stop
 
-update-data: clean download extract extrapolate reload-data run
+update-data: clean download extrapolate reload-data run
 
 clean-pdf:
 	-rm -rf $(PDF_DATA_DIR)/*
@@ -86,7 +86,7 @@ download-chapeco-sms: $(CHAPECO_DATA_DIR)
 		https://www.chapeco.sc.gov.br/documentos/54/documentoCategoria \
 		-P /data/pdf/chapeco/
 
-download: download-brasil-io download-chapeco-sms
+download: download-brasil-io
 
 collect: $(ES_STACK)/data/caso.csv $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv
 
