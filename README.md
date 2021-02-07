@@ -17,6 +17,19 @@ Você irá precisar de:
  - docker 19+
  - python 3+
  - sudo
+ - git com suporte lfs: https://git-lfs.github.com/
+
+Nota: se você já fez o clone antes de adicionar suporte a lfs, após haver adicionado o suporte você pode:
+
+```
+$ rm snapshots.tgz
+$ git checkout .
+```
+
+Para baixar os arquivos que necessitam do lfs.
+
+Com as dependências resolvidas:
+
 
 ```
 $ make setup
