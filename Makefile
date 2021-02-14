@@ -1,4 +1,4 @@
-.PHONY: \
+.PHONY: 
 	setup-docker build run recollect-data reload-data download \
 	collect templates pipeline export-kibana import-kibana commit-containers \
 	tag-gcr push-gcr tag-hub push-hub clean deploy-gcr depoy-hub tag-treescale \
@@ -37,7 +37,6 @@ setup:
 	make setup-docker
 	make build
 	make download
-	make extract
 	make extrapolate
 
 build: pipeline
@@ -91,11 +90,6 @@ download: download-brasil-io
 collect: $(ES_STACK)/data/caso.csv $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv
 
 extrapolate: $(ES_STACK)/data/caso-extra.csv
-
-extract: pdf-extract
-
-pdf-extract:
-	docker-compose run scraper python scraper/scrape.py /input-data/pdf/chapeco /output-data/chapeco.csv
 
 $(ES_STACK)/data/%-extra.csv: $(ES_STACK)/data/%.csv
 	docker-compose run extrapolation python /extrapolation/extrapolate.py /data/`basename $<` /data/`basename $@` --prior 60 --after 30 --order 2
