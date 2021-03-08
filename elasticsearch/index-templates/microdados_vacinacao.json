@@ -1,0 +1,11 @@
+{
+    "index_patterns": ["microdados_vacinacao"],
+    "mappings": {
+        "properties": {
+            "date": {
+                "type": "date",
+                "format": "strict_date_optional_time"
+            }
+        }
+    }
+}
