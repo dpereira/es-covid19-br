@@ -77,6 +77,8 @@ download-brasil-io: $(CSV_DATA_DIR)
 		curl https://data.brasil.io/dataset/covid19/obito_cartorio.csv.gz --output /$(CSV_DATA_DIR)/obito_cartorio.csv.gz
 	docker-compose run downloader \
 		curl https://data.brasil.io/dataset/covid19/caso.csv.gz --output /$(CSV_DATA_DIR)/caso.csv.gz
+	docker-compose run downloader \
+		curl https://data.brasil.io/dataset/covid19/microdados_vacinacao.csv.gz --output /$(CSV_DATA_DIR)/microdados_vacinacao.csv.gz
 
 download-chapeco-sms: $(CHAPECO_DATA_DIR)
 	docker-compose run downloader \
@@ -87,7 +89,7 @@ download-chapeco-sms: $(CHAPECO_DATA_DIR)
 
 download: download-brasil-io
 
-collect: $(ES_STACK)/data/caso.csv $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv
+collect: $(ES_STACK)/data/caso.csv $(ES_STACK)/data/boletim.csv $(ES_STACK)/data/obito_cartorio.csv $(ES_STACK)/data/microdados_vacinacao.csv
 
 extrapolate: $(ES_STACK)/data/caso-extra.csv
 
